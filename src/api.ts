@@ -29,7 +29,7 @@ export async function getEmojiResponseServerless(
         success: true,
         msg: `Request succeeded, but team "${teamId}" did not match one of the existing teams`,
       };
-      logger.warning(body.msg);
+      logger.warn(body.msg);
       response.status = 207;
       response.body = body;
       return response;
