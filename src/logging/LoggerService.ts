@@ -6,5 +6,5 @@ const customFormat = format.printf(({ level, message, timestamp, meta }) => {
 
 export const logger = createLogger({
   format: format.combine(format.timestamp(), customFormat),
-  transports: [new transports.Console()],
+  transports: [new transports.Console({ level: 'info' })],
 });

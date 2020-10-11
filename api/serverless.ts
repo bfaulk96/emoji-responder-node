@@ -26,7 +26,7 @@ export default (request: NowRequest, response: NowResponse) => {
     const reqBody = request?.body;
 
     try {
-      logger.info('Received request body:', reqBody);
+      logger.info('Received request body', reqBody);
       body = JSON.parse(atob(reqBody));
     } catch (e) {
       logger.error(`Error parsing malformed body: ${JSON.stringify(e)}`, reqBody);
