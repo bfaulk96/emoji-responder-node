@@ -118,7 +118,10 @@ export async function updateEmojiMappingsServerless(
         break;
       default:
         logger.warn(`Invalid slash command used. commandType: "${commandType}", params: ${params}`);
-        return { status: 400, body: 'Slash command invalid.' };
+        return {
+          status: 400,
+          body: { response_type: 'ephemeral', text: 'Slash command invalid.' },
+        };
     }
 
     if (typeof dbResult === 'string') {
