@@ -29,7 +29,7 @@ export default (request: NowRequest, response: NowResponse) => {
       logger.info('Received request body:', reqBody);
       body = JSON.parse(atob(reqBody));
     } catch (e) {
-      logger.error('Error parsing malformed body:', reqBody);
+      logger.error('Error parsing malformed body', reqBody);
       return response.status(400).send('Malformed body');
     }
 
