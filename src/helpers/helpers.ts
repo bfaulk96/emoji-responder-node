@@ -13,11 +13,17 @@ export async function validateFromSlack(
   const ts = req.headers['X-Slack-Request-Timestamp'];
   const slack_signature = req.headers['X-Slack-Signature'];
 
-  if (!ts || !slack_signature) return res.status(403).send('Missing required headers');
+  if (!ts || !slack_signature) {
+    const message = 'Missing required headers';
+    logger.error(message);
+    return res.status(403).send(message);
+  }
 
   const FIVE_MINUTES = 300000; // 60 * 5 * 1000
   if (Math.abs(Date.now() - ts * 1000) > FIVE_MINUTES) {
-    return res.status(403).send('Blocking potential replay attack');
+    const message = 'Blocking potential replay attack';
+    logger.error(message);
+    return res.status(403).send(message);
   }
 
   const signatureBaseStr = `v0:${ts}:${bodyStr}`;
@@ -25,9 +31,12 @@ export async function validateFromSlack(
   if (
     !timingSafeEqual(slack_signature as NodeJS.ArrayBufferView, signature as NodeJS.ArrayBufferView)
   ) {
-    return res.status(403).send('Invalid signature');
+    const message = 'Invalid signature';
+    logger.error(message);
+    return res.status(403).send(message);
   }
 
+  logger.debug("It worked, but I'm testing");
   return res.status(418).send("It worked, but I'm testing");
 }
 
