@@ -2,6 +2,7 @@
   "name": "emoji-responder-node",
   "version": "1.0.0",
   "description": "EmojiResponder Slackbot, written with Typescript and NodeJS",
+  "repository": "https://github.com/bfaulk96/emoji-responder-node",
   "main": "api/serverless.ts",
   "scripts": {
     "start": "ts-node api/serverless.ts",
