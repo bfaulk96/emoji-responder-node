@@ -8,5 +8,5 @@ export interface EmojiMappingsDbo {
 
 export interface FunctionResults {
   status: number;
-  body: string | unknown;
+  body: string | any;
 }
