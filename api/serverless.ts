@@ -1,10 +1,6 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { NowRequest, NowResponse } from '@vercel/node';
 
-export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-  console.log('Hello World!');
-  return {
-    statusCode: 200,
-    body: JSON.stringify(event, null, 2),
-    headers: { 'Content-Type': 'application/json' },
-  };
+export default (request: NowRequest, response: NowResponse) => {
+  const { name = 'World' } = request.query;
+  response.status(200).send(`Hello ${name}!`);
 };

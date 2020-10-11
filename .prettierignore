@@ -9,6 +9,8 @@ node_modules/
 build/
 dist/
 coverage/
+.vercel/
+.now/
 
 # Ignore all HTML files:
 *.html
