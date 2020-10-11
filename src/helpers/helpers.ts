@@ -11,8 +11,8 @@ export async function validateFromSlack(
   const signingSecret = process.env.SIGNING_SECRET ?? '';
   const bodyStr = await streamToString(req);
   logger.debug(JSON.stringify(req.headers));
-  const ts = req.headers['X-Slack-Request-Timestamp'];
-  const slack_signature = req.headers['X-Slack-Signature'];
+  const ts = req.headers['x-slack-request-timestamp'];
+  const slack_signature = req.headers['x-slack-signature'];
 
   if (!ts || !slack_signature) {
     const message = 'Missing required headers';
