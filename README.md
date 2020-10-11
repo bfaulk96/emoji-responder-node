@@ -13,5 +13,6 @@ Built with NodeJS and Typescript
 - [x] Connect to database
 - [ ] Clean up typings and comments
 - [x] Add error check(s) to Slack calls
-- [ ] Add functionality to add/remove mappings from database for a team
+- [x] Add functionality to add/remove mappings from database for a team
+- [ ] Add functionality to BULK add/remove mappings from database for a team
 - [ ] Add functionality to get a list of mappings for a particular team

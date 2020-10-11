@@ -41,7 +41,7 @@ export function respondToHandshake(
   }
 }
 
-// // TODO: check if body uses interface?
+// TODO: check if body uses interface?
 // export function validateBody(
 //   request: any,
 //   response: any,
@@ -67,7 +67,7 @@ export function containsWord(str: string, word: string): boolean {
 }
 
 export function containsInvalidCharacters(str: string) {
-  return !/^[a-zA-Z0-9_"' -]/.test(str);
+  return !/^[a-zA-Z0-9_"' -]*$/g.test(str);
 }
 
 export function splitOnSpacesOrQuotes(str: string): string[] {

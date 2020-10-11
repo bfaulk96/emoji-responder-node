@@ -1,10 +1,4 @@
-import {
-  Collection,
-  MongoClient,
-  UpdateOneOptions,
-  UpdateQuery,
-  UpdateWriteOpResult,
-} from 'mongodb';
+import { Collection, MongoClient, UpdateOneOptions, UpdateWriteOpResult } from 'mongodb';
 import { logger } from '../logging/LoggerService';
 import { EmojiMappings, EmojiMappingsDbo } from '../models/types';
 
@@ -45,8 +39,10 @@ export class Database {
     const existingMappings = await this.getMappings(teamId);
 
     const matchingKey = Object.keys(newMappings).find(
-      (key) => newMappings[key] && existingMappings?.[key]
+      (key) =>
+        newMappings[key] && existingMappings?.[key] && newMappings[key] !== existingMappings?.[key]
     );
+
     if (matchingKey && !overwriteExisting) {
       return `Oops! Mapping already exists with :${existingMappings?.[matchingKey]}:`;
     }
@@ -59,10 +55,4 @@ export class Database {
     const options: UpdateOneOptions = { upsert: true };
     return await this.collection.updateOne({ teamId }, update, options);
   }
-  //
-  // static deleteMapping(serverId: string): Promise<number> {
-  //   if (!this.collection) this.connect();
-  //
-  //   return users.deleteOne({ serverId });
-  // }
 }

@@ -7,7 +7,7 @@ import {
 import { SlackUser } from '../src/models/slack-user';
 import { logger } from '../src/logging/LoggerService';
 import { Methods } from '../src/models/types';
-import { getEmojiResponseServerless, updateEmojiMappingsServerless } from '../src/api';
+import { updateEmojiMappingsServerless } from '../src/api';
 
 export default async (request: NowRequest, response: NowResponse) => {
   const connErr = await connectOrError(response);

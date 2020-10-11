@@ -65,7 +65,7 @@ export async function getEmojiResponseServerless(
 
     return response;
   } catch (e) {
-    logger.error('Error occurred: ${e}');
+    logger.error(`Error occurred: ${e}`);
     return {
       status: 500,
       body: 'Internal Server Error',
