@@ -41,22 +41,6 @@ export function respondToHandshake(
   }
 }
 
-// TODO: check if body uses interface?
-// export function validateBody(
-//   request: any,
-//   response: any,
-//   interfaceType?: any,
-// ): FunctionResults | undefined {
-//   if (!request.hasBody) {
-//     response.status = 400;
-//     response.body = {
-//       success: false,
-//       msg: 'No data',
-//     };
-//     return response;
-//   }
-// }
-
 export function containsWord(str: string, word: string): boolean {
   return (
     // check that word isn't part of an emoji already
