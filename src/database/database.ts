@@ -1,7 +1,10 @@
 import { Collection, MongoClient } from 'mongodb';
 import { logger } from '../logging/LoggerService';
 import { EmojiMappings } from '../models/types';
-// import { EmojiMappings } from '../types.ts';
+
+const mongoUrl = process.env.MONGO_URL ?? '';
+const dbName = process.env.DB_NAME ?? '';
+const collectionName = process.env.COLLECTION_NAME ?? '';
 
 export class Database {
   static client: MongoClient;
@@ -9,14 +12,12 @@ export class Database {
 
   static async connect(): Promise<unknown | undefined> {
     try {
-      const mongoUrl = process.env.MONGO_URL;
-
       if (this.client) this.client.close?.();
       this.client = new MongoClient(mongoUrl);
 
       await this.client.connect();
-      const database = this.client.db(process.env.DB_NAME ?? '');
-      this.collection = database.collection(process.env.COLLECTION_NAME ?? '');
+      const database = this.client.db(dbName);
+      this.collection = database.collection(collectionName);
       // await client.connectWithUri(`mongodb+srv://${user}:${pass}@clusterfaulkner.tjoim.mongodb.net/?retryWrites=true&w=majority`);
       //
       // const db = client.database(dbName);
