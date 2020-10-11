@@ -8,37 +8,45 @@ export async function validateFromSlack(
   req: NowRequest,
   res: NowResponse
 ): Promise<NowResponse | null> {
-  const signingSecret = process.env.SIGNING_SECRET ?? '';
-  const bodyStr = await streamToString(req);
-  logger.debug(JSON.stringify(req.headers));
-  const ts = req.headers['x-slack-request-timestamp'];
-  const slack_signature = req.headers['x-slack-signature'];
+  try {
+    const signingSecret = process.env.SIGNING_SECRET ?? '';
+    const bodyStr = await streamToString(req);
+    logger.debug(JSON.stringify(req.headers));
+    const ts = req.headers['x-slack-request-timestamp'];
+    const slack_signature = req.headers['x-slack-signature'];
 
-  if (!ts || !slack_signature) {
-    const message = 'Missing required headers';
-    logger.error(message);
-    return res.status(403).send(message);
+    if (!ts || !slack_signature) {
+      const message = 'Missing required headers';
+      logger.error(message);
+      return res.status(403).send(message);
+    }
+
+    const FIVE_MINUTES = 300000; // 60 * 5 * 1000
+    if (Math.abs(Date.now() - ts * 1000) > FIVE_MINUTES) {
+      const message = 'Blocking potential replay attack';
+      logger.error(message);
+      return res.status(403).send(message);
+    }
+
+    const signatureBaseStr = `v0:${ts}:${bodyStr}`;
+    const signature = createHmac('sha-256', signatureBaseStr).update(signingSecret).digest('hex');
+    if (
+      !timingSafeEqual(
+        slack_signature as NodeJS.ArrayBufferView,
+        signature as NodeJS.ArrayBufferView
+      )
+    ) {
+      const message = 'Invalid signature';
+      logger.error(message);
+      return res.status(403).send(message);
+    }
+
+    logger.debug("It worked, but I'm testing");
+    return res.status(418).send("It worked, but I'm testing");
+  } catch (e) {
+    logger.error(`An error occurred validating caller: ${e}`);
+    return res.status(500).send('Error validating caller');
   }
-
-  const FIVE_MINUTES = 300000; // 60 * 5 * 1000
-  if (Math.abs(Date.now() - ts * 1000) > FIVE_MINUTES) {
-    const message = 'Blocking potential replay attack';
-    logger.error(message);
-    return res.status(403).send(message);
-  }
-
-  const signatureBaseStr = `v0:${ts}:${bodyStr}`;
-  const signature = createHmac('sha-256', signingSecret).update(signatureBaseStr).digest('hex');
-  if (
-    !timingSafeEqual(slack_signature as NodeJS.ArrayBufferView, signature as NodeJS.ArrayBufferView)
-  ) {
-    const message = 'Invalid signature';
-    logger.error(message);
-    return res.status(403).send(message);
-  }
-
-  logger.debug("It worked, but I'm testing");
-  return res.status(418).send("It worked, but I'm testing");
 }
 
 async function streamToString(stream) {
