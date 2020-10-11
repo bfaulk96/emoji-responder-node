@@ -1,8 +1,9 @@
-import { NowRequest, NowResponse } from '@vercel/node';
+import { NowRequest, NowRequestBody, NowResponse } from '@vercel/node';
 import { SlackUser } from '../src/models/slack-user';
 import { logger } from '../src/logging/LoggerService';
+import { getEmojiResponseServerless } from '../src/api';
 
-export default (request: NowRequest, response: NowResponse) => {
+export default async (request: NowRequest, response: NowResponse) => {
   // try {
   //   await Database.connect();
   // } catch (err) {
@@ -10,7 +11,6 @@ export default (request: NowRequest, response: NowResponse) => {
   // }
 
   const BOT_TOKEN = process.env.BOT_TOKEN;
-
   if (!BOT_TOKEN) {
     logger.crit('Cannot run app without bot user token');
     return response.status(500).send('Internal Server Error');
@@ -22,18 +22,18 @@ export default (request: NowRequest, response: NowResponse) => {
   if (request?.method !== 'POST') {
     return response.send(405).send('Method Not Allowed');
   } else {
-    let body;
-    const encodedBody = request?.body;
+    let body: unknown;
+    const encodedBody: NowRequestBody = request?.body;
 
     try {
-      logger.info('Received request body', { body: encodedBody });
       body = JSON.parse(Buffer.from(encodedBody, 'base64').toString());
+      logger.debug('Request body successfully decoded', body);
     } catch (e) {
       logger.error(`Error parsing malformed body: ${e}`, { body: encodedBody });
       return response.status(400).send('Malformed body');
     }
 
-    return response.send('test');
-    // return req.respond(await getEmojiResponseServerless(user, body));
+    const { status, body: responseBody } = await getEmojiResponseServerless(user, body);
+    return response.status(status).send(responseBody);
   }
 };

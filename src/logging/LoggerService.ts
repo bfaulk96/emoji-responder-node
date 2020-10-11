@@ -1,8 +1,8 @@
 import { createLogger, format, LogEntry, transports } from 'winston';
 
 const customFormat = format.printf((info: LogEntry) => {
-  const { level, message, timestamp, metadata } = info;
-  return `${timestamp} [${level}]: ${message}  ` + (metadata ?? '');
+  const { level, message, timestamp, meta } = info;
+  return `${timestamp} [${level}]: ${message}  ` + (meta ?? '');
 });
 
 export const logger = createLogger({
