@@ -26,7 +26,7 @@ export function checkAllowedMethodsOrError(
   allowedMethods: Methods[],
   response: NowResponse
 ): null | NowResponse {
-  if (!allowedMethods.includes(method)) return response.send(405).send('Method Not Allowed');
+  if (!allowedMethods.includes(method)) return response.status(405).send('Method Not Allowed');
   return null;
 }
 

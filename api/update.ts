@@ -19,7 +19,11 @@ export default async (request: NowRequest, response: NowResponse) => {
 
   logger.info(`${request?.method ?? 'UNKNOWN METHOD'} ${request?.url}`);
 
-  const methodErr = checkAllowedMethodsOrError(request?.method as Methods, [Methods.PUT], response);
+  const methodErr = checkAllowedMethodsOrError(
+    request?.method as Methods,
+    [Methods.POST],
+    response
+  );
   if (methodErr) return methodErr;
 
   const body: NowRequestBody = request?.body;
