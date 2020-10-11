@@ -37,8 +37,7 @@ export async function validateFromSlack(
       return res.status(403).send(message);
     }
 
-    logger.debug("It worked, but I'm testing");
-    return res.status(418).send("It worked, but I'm testing");
+    return null;
   } catch (e) {
     logger.error(`An error occurred validating caller: ${e}`);
     return res.status(500).send('Error validating caller');
