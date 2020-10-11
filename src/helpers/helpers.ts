@@ -12,10 +12,10 @@ export async function validateFromSlack(
     const signingSecret = process.env.SIGNING_SECRET ?? '';
     const bodyStr = await streamToString(req);
     logger.debug(`Headers: ${JSON.stringify(req.headers, null, 2)}`);
-    const ts = req.headers['x-slack-request-timestamp'];
-    const slack_signature = req.headers['x-slack-signature'];
+    const ts = req.headers['x-slack-request-timestamp'] ?? '';
+    const slackSignature: string = req.headers['x-slack-signature'] as string;
 
-    if (!ts || !slack_signature) {
+    if (!ts || !slackSignature) {
       const message = 'Missing required headers';
       logger.error(message);
       return res.status(403).send(message);
@@ -31,12 +31,7 @@ export async function validateFromSlack(
     const signatureBaseStr = `v0:${ts}:${bodyStr}`;
     const signature =
       'v0=' + createHmac('sha256', signingSecret).update(signatureBaseStr).digest('hex');
-    if (
-      !timingSafeEqual(
-        slack_signature as NodeJS.ArrayBufferView,
-        signature as NodeJS.ArrayBufferView
-      )
-    ) {
+    if (!timingSafeEqual(Buffer.from(slackSignature, 'utf8'), Buffer.from(signature, 'utf8'))) {
       const message = 'Invalid signature';
       logger.error(message);
       return res.status(403).send(message);
