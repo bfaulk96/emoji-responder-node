@@ -113,7 +113,7 @@ export async function updateEmojiMappingsServerless(
     if (dbResult?.result?.ok) {
       const message = `Successfully ${(operation + 'ed').replace('ee', 'e')} emoji mapping${
         bulk ? 's' : ''
-      }: ${mappings}`;
+      }.`;
       logger.info(message);
       response.body = {
         response_type: 'in_channel',
