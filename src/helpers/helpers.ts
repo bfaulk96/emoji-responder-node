@@ -11,7 +11,7 @@ export function validateFromSlack(req: NowRequest, res: NowResponse): NowRespons
   const slack_signature = req.headers['X-Slack-Signature'];
 
   logger.debug(`${req.toString()}`);
-  logger.debug(req.read());
+  logger.debug(streamToString(req));
 
   if (!ts || !slack_signature) return res.status(403).send('Missing required headers');
 
@@ -29,6 +29,15 @@ export function validateFromSlack(req: NowRequest, res: NowResponse): NowRespons
   }
 
   return res.status(418).send("It worked, but I'm testing");
+}
+
+async function streamToString(stream) {
+  const chunks = [];
+  return new Promise((resolve, reject) => {
+    stream.on('data', (chunk) => chunks.push(chunk));
+    stream.on('error', reject);
+    stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+  });
 }
 
 export async function connectOrError(response: NowResponse): Promise<null | NowResponse> {
