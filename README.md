@@ -11,7 +11,7 @@ Built with NodeJS and Typescript
 
 ### Current Roadmap:
 - [x] Connect to database
-- [ ] Clean up typings and comments
+- [x] Clean up typings and comments
 - [x] Add error check(s) to Slack calls
 - [x] Add functionality to add/remove mappings from database for a team
 - [ ] Add functionality to BULK add/remove mappings from database for a team

@@ -3,6 +3,7 @@ import {
   checkAllowedMethodsOrError,
   connectOrError,
   getBotTokenOrError,
+  validateFromSlack,
 } from '../src/helpers/helpers';
 import { SlackUser } from '../src/models/slack-user';
 import { logger } from '../src/logging/LoggerService';
@@ -10,6 +11,9 @@ import { Methods } from '../src/models/types';
 import { updateEmojiMappingsServerless } from '../src/api';
 
 export default async (request: NowRequest, response: NowResponse) => {
+  const validationErr = await validateFromSlack(request, response);
+  if (validationErr) return validationErr;
+
   const connErr = await connectOrError(response);
   if (connErr) return connErr;
 

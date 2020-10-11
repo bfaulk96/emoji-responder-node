@@ -1,7 +1,31 @@
 import { FunctionResults, Methods } from '../models/types';
 import { Database } from '../database/database';
-import { NowResponse } from '@vercel/node';
+import { NowRequest, NowResponse } from '@vercel/node';
 import { logger } from '../logging/LoggerService';
+import { createHmac, com, timingSafeEqual } from 'crypto';
+
+export function validateFromSlack(req: NowRequest, res: NowResponse): NowResponse | null {
+  const signingSecret = process.env.SIGNING_SECRET ?? '';
+  const bodyStr = req.body();
+  const ts = req.headers['X-Slack-Request-Timestamp'];
+  const slack_signature = req.headers['X-Slack-Signature'];
+  if (!ts || !slack_signature) return res.status(403).send('Missing required headers');
+
+  const FIVE_MINUTES = 300000; // 60 * 5 * 1000
+  if (Math.abs(Date.now() - ts * 1000) > FIVE_MINUTES) {
+    return res.status(403).send('Blocking potential replay attack');
+  }
+
+  const signatureBaseStr = `v0:${ts}:${bodyStr}`;
+  const signature = createHmac('sha-256', signingSecret).update(signatureBaseStr).digest('hex');
+  if (
+    !timingSafeEqual(slack_signature as NodeJS.ArrayBufferView, signature as NodeJS.ArrayBufferView)
+  ) {
+    return res.status(403).send('Invalid signature');
+  }
+
+  return res.status(418).send("It worked, but I'm testing");
+}
 
 export async function connectOrError(response: NowResponse): Promise<null | NowResponse> {
   try {
