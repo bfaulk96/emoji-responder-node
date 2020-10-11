@@ -78,7 +78,7 @@ export async function updateEmojiMappingsServerless(
   body: SlackSlashCommandBody
 ): Promise<FunctionResults> {
   try {
-    let response: FunctionResults = { status: 200, body: { success: true } };
+    const response: FunctionResults = { status: 200, body: { success: true } };
 
     // Respond to slack handshake if necessary
     const handshake = respondToHandshake(body, response);
@@ -119,7 +119,7 @@ export async function updateEmojiMappingsServerless(
       default:
         logger.warn(`Invalid slash command used. commandType: "${commandType}", params: ${params}`);
         return {
-          status: 400,
+          status: 200,
           body: { response_type: 'ephemeral', text: 'Slash command invalid.' },
         };
     }
@@ -141,12 +141,9 @@ export async function updateEmojiMappingsServerless(
     } else {
       const message = `Error ${(operation + 'ing').replace('ei', 'i')} emoji mapping.`;
       logger.error(message);
-      response = {
-        status: 500,
-        body: {
-          response_type: 'ephemeral',
-          text: message,
-        },
+      response.body = {
+        response_type: 'ephemeral',
+        text: message,
       };
     }
 
@@ -154,7 +151,7 @@ export async function updateEmojiMappingsServerless(
   } catch (e) {
     logger.error(`Error occurred: ${e}`);
     return {
-      status: 500,
+      status: 200,
       body: {
         response_type: 'ephemeral',
         text: 'Internal Server Error',
