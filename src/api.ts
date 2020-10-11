@@ -9,12 +9,12 @@ export async function getEmojiResponseServerless(
   body: any // TODO: Add types for the challenge or actual call
 ): Promise<FunctionResults> {
   try {
-    const response = { status: 200, body: JSON.stringify({ success: true }) };
+    const response: FunctionResults = { status: 200, body: { success: true } };
 
     // Respond to slack handshake if necessary
     const handshake = respondToHandshake(body, response);
     if (handshake) {
-      response.body = JSON.stringify(handshake.body);
+      response.body = handshake.body;
       return response;
     }
     const teamId = body?.team_id;
@@ -31,7 +31,7 @@ export async function getEmojiResponseServerless(
       };
       logger.warning(body.msg);
       response.status = 207;
-      response.body = JSON.stringify(body);
+      response.body = body;
       return response;
     }
 
@@ -48,10 +48,10 @@ export async function getEmojiResponseServerless(
         .map((key) => emojiMap[key]);
 
       if (emojis.length) {
-        response.body = JSON.stringify({
-          ...JSON.parse(response.body),
+        response.body = {
+          ...response.body,
           emojis,
-        });
+        };
         // await respondWithEmoji(channel, emojis.map((x: string) => `:${x}:`).join(""));
         await addMultipleReactions(user, channel, timestamp, emojis);
       }
@@ -73,7 +73,7 @@ export function respondToHandshake(
 ): FunctionResults | undefined {
   const challenge = body?.value?.challenge ?? body?.challenge;
   if (challenge) {
-    response.body = JSON.stringify({ challenge });
+    response.body = { challenge };
     return response;
   }
 }
@@ -86,10 +86,10 @@ export function respondToHandshake(
 // ): FunctionResults | undefined {
 //   if (!request.hasBody) {
 //     response.status = 400;
-//     response.body = JSON.stringify({
+//     response.body = {
 //       success: false,
 //       msg: 'No data',
-//     });
+//     };
 //     return response;
 //   }
 // }
