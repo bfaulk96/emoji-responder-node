@@ -44,11 +44,11 @@ export class Database {
 
     const existingMappings = await this.getMappings(teamId);
 
-    if (
-      Object.keys(newMappings).some((key) => newMappings[key] && existingMappings?.[key]) &&
-      !overwriteExisting
-    ) {
-      return 'Oops! Mapping already exists.';
+    const matchingKey = Object.keys(newMappings).find(
+      (key) => newMappings[key] && existingMappings?.[key]
+    );
+    if (matchingKey && !overwriteExisting) {
+      return `Oops! Mapping already exists with :${existingMappings?.[matchingKey]}:`;
     }
 
     const mappings = { ...existingMappings, ...newMappings };

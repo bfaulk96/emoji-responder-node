@@ -124,7 +124,7 @@ export async function updateEmojiMappingsServerless(
     if (typeof dbResult === 'string') {
       response.body = {
         response_type: 'in_channel',
-        text: `${dbResult}\nTo overwrite existing mapping, please use \`/emoji-map update "${params[0]}" "${params[1]}"\``,
+        text: `${dbResult}\nTo overwrite existing mapping, please use:\n\`/emoji-map update "${params[0]}" "${params[1]}"\``,
       };
     } else if (dbResult?.result?.ok) {
       const message = `Successfully ${(operation + 'ed').replace('ee', 'e')} emoji mapping${
