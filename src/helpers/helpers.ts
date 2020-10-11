@@ -10,7 +10,8 @@ export function validateFromSlack(req: NowRequest, res: NowResponse): NowRespons
   const ts = req.headers['X-Slack-Request-Timestamp'];
   const slack_signature = req.headers['X-Slack-Signature'];
 
-  logger.debug(`${req}`);
+  logger.debug(`${req.toString()}`);
+  logger.debug(req.read());
 
   if (!ts || !slack_signature) return res.status(403).send('Missing required headers');
 
