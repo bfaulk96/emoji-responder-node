@@ -46,7 +46,7 @@ export class Database {
     Object.keys(mappings).forEach((key) => !mappings[key] && delete mappings[key]);
 
     const dateKey: keyof EmojiMappingsDbo = mappings ? 'lastUpdated' : 'created';
-    const update = { mappings, teamId, [dateKey]: new Date() };
+    const update = { $set: { mappings, teamId, [dateKey]: new Date() } };
     const options: UpdateOneOptions = { upsert: true };
     return await this.collection.updateOne({ teamId }, update, options);
   }

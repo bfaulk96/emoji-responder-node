@@ -1,7 +1,9 @@
+import { ObjectId } from 'mongodb';
+
 export type EmojiMappings = Record<string, string | undefined>;
 
 export interface EmojiMappingsDbo {
-  _id: string;
+  _id: ObjectId;
   teamId: string;
   mappings: EmojiMappings;
   created: Date;
