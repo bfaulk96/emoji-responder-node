@@ -10,6 +10,7 @@ export async function validateFromSlack(
 ): Promise<NowResponse | null> {
   const signingSecret = process.env.SIGNING_SECRET ?? '';
   const bodyStr = await streamToString(req);
+  logger.debug(JSON.stringify(req.headers));
   const ts = req.headers['X-Slack-Request-Timestamp'];
   const slack_signature = req.headers['X-Slack-Signature'];
 
