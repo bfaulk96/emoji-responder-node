@@ -1,0 +1,48 @@
+{
+  "name": "emoji-responder-node",
+  "version": "1.0.0",
+  "description": "EmojiResponder Slackbot, written with Typescript and NodeJS",
+  "main": "api/serverless.ts",
+  "scripts": {
+    "start": "ts-node api/serverless.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Brandon Faulkner",
+  "keywords": [
+    "node",
+    "typescript",
+    "lambda",
+    "emoji",
+    "slack",
+    "slackbot",
+    "responder",
+    "javascript",
+    "serverless",
+    "bot"
+  ],
+  "license": "ISC",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.63",
+    "@types/node": "^14.11.8",
+    "@typescript-eslint/eslint-plugin": "^4.4.0",
+    "@typescript-eslint/parser": "^4.4.0",
+    "eslint": "^7.11.0",
+    "eslint-config-prettier": "^6.12.0",
+    "husky": "^4.3.0",
+    "lint-staged": "^10.4.0",
+    "prettier": "^2.1.2",
+    "typescript": "^4.0.3"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "**/*.{js,ts}": [
+      "eslint --fix",
+      "prettier --write --ignore-unknown",
+      "git add"
+    ]
+  }
+}
