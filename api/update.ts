@@ -11,7 +11,7 @@ import { Methods } from '../src/models/types';
 import { updateEmojiMappingsServerless } from '../src/api';
 
 export default async (request: NowRequest, response: NowResponse) => {
-  const validationErr = validateFromSlack(request, response);
+  const validationErr = await validateFromSlack(request, response);
   if (validationErr) return validationErr;
 
   const connErr = await connectOrError(response);

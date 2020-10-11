@@ -4,14 +4,14 @@ import { NowRequest, NowResponse } from '@vercel/node';
 import { logger } from '../logging/LoggerService';
 import { createHmac, timingSafeEqual } from 'crypto';
 
-export function validateFromSlack(req: NowRequest, res: NowResponse): NowResponse | null {
+export async function validateFromSlack(req: NowRequest, res: NowResponse): NowResponse | null {
   const signingSecret = process.env.SIGNING_SECRET ?? '';
   const bodyStr = req.body;
   const ts = req.headers['X-Slack-Request-Timestamp'];
   const slack_signature = req.headers['X-Slack-Signature'];
 
   logger.debug(`${req.toString()}`);
-  logger.debug(streamToString(req));
+  logger.debug(await streamToString(req));
 
   if (!ts || !slack_signature) return res.status(403).send('Missing required headers');
 
