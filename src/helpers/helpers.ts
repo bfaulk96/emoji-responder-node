@@ -11,7 +11,7 @@ export async function validateFromSlack(
   try {
     const signingSecret = process.env.SIGNING_SECRET ?? '';
     const bodyStr = await streamToString(req);
-    logger.debug(JSON.stringify(req.headers));
+    logger.debug(`Headers: ${JSON.stringify(req.headers, null, 2)}`);
     const ts = req.headers['x-slack-request-timestamp'];
     const slack_signature = req.headers['x-slack-signature'];
 
@@ -29,7 +29,8 @@ export async function validateFromSlack(
     }
 
     const signatureBaseStr = `v0:${ts}:${bodyStr}`;
-    const signature = createHmac('sha-256', signatureBaseStr).update(signingSecret).digest('hex');
+    const signature =
+      'v0=' + createHmac('sha256', signingSecret).update(signatureBaseStr).digest('hex');
     if (
       !timingSafeEqual(
         slack_signature as NodeJS.ArrayBufferView,
