@@ -35,7 +35,7 @@ export class Database {
     return (await this.collection?.findOne<EmojiMappingsDbo>({ teamId }))?.mappings;
   }
 
-  static async putMapping(
+  static async upsertMappings(
     teamId: string,
     newMappings: EmojiMappings
   ): Promise<UpdateWriteOpResult> {

@@ -92,16 +92,19 @@ export async function updateEmojiMappingsServerless(
 
     let dbResult: UpdateWriteOpResult;
     let operation: string;
+    let mappings: string;
     const bulk = false;
 
     if (CommandTypes.ADD.includes(commandType) && params?.length === 2) {
-      logger.info(`Adding emoji mapping: { "${params[0]}": "${params[1]}" }`);
+      mappings = `"${params[0]}" => "${params[1]}"`;
       operation = 'add';
-      dbResult = await Database.putMapping(teamId, { [params[0]]: params[1] });
+      logger.info(`Adding emoji mapping: ${mappings}`);
+      dbResult = await Database.upsertMappings(teamId, { [params[0]]: params[1] });
     } else if (CommandTypes.REMOVE.includes(commandType) && params?.length === 1) {
-      logger.info(`Removing emoji mapping for key:" ${params[0]}"`);
+      mappings = `"${params[0]}"`;
       operation = 'remove';
-      dbResult = await Database.putMapping(teamId, { [params[0]]: undefined });
+      logger.info(`Removing emoji mapping for key: ${mappings}`);
+      dbResult = await Database.upsertMappings(teamId, { [params[0]]: undefined });
     } else {
       logger.warn(`Invalid slash command used. commandType: "${commandType}", params: ${params}`);
       return { status: 400, body: 'Slash command invalid.' };
@@ -110,15 +113,21 @@ export async function updateEmojiMappingsServerless(
     if (dbResult?.result?.ok) {
       const message = `Successfully ${(operation + 'ed').replace('ee', 'e')} emoji mapping${
         bulk ? 's' : ''
-      }.`;
+      }: ${mappings}`;
       logger.info(message);
-      response.body = message;
+      response.body = {
+        response_type: 'in_channel',
+        text: message,
+      };
     } else {
-      const message = `Error ${(operation + 'ing').replace('ei', 'i')} emoji mapping.`;
+      const message = `Error ${(operation + 'ing').replace('ei', 'i')} emoji mapping: ${mappings}`;
       logger.error(message);
       response = {
         status: 500,
-        body: message,
+        body: {
+          response_type: 'ephemeral',
+          text: message,
+        },
       };
     }
 
@@ -127,7 +136,10 @@ export async function updateEmojiMappingsServerless(
     logger.error(`Error occurred: ${e}`);
     return {
       status: 500,
-      body: 'Internal Server Error',
+      body: {
+        response_type: 'ephemeral',
+        text: 'Internal Server Error',
+      },
     };
   }
 }
