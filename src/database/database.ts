@@ -1,6 +1,12 @@
-import { Collection, MongoClient } from 'mongodb';
+import {
+  Collection,
+  MongoClient,
+  UpdateOneOptions,
+  UpdateQuery,
+  UpdateWriteOpResult,
+} from 'mongodb';
 import { logger } from '../logging/LoggerService';
-import { EmojiMappings } from '../models/types';
+import { EmojiMappings, EmojiMappingsDbo } from '../models/types';
 
 const mongoUrl = process.env.MONGO_URL ?? '';
 const dbName = process.env.DB_NAME ?? '';
@@ -18,10 +24,6 @@ export class Database {
       await this.client.connect();
       const database = this.client.db(dbName);
       this.collection = database.collection(collectionName);
-      // await client.connectWithUri(`mongodb+srv://${user}:${pass}@clusterfaulkner.tjoim.mongodb.net/?retryWrites=true&w=majority`);
-      //
-      // const db = client.database(dbName);
-      // this.collection = db.collection<EmojiMappingsDbo>(collectionName);
       return this.collection;
     } catch (e) {
       logger.error(`Error occurred connecting to DB: ${e}`);
@@ -30,18 +32,22 @@ export class Database {
 
   static async getMappings(teamId: string): Promise<EmojiMappings> {
     if (!this.collection) await this.connect();
-
-    return (await this.collection?.findOne({ teamId }))?.mappings;
+    return (await this.collection?.findOne<EmojiMappingsDbo>({ teamId }))?.mappings;
   }
 
-  // static putMapping(serverId: string): Promise<EmojiMappings> {
-  //   if (!this.collection) this.connect();
-  //
-  //   return users.updateOne(
-  //     { serverId } },
-  //     { $set: mappings }
-  //   );
-  // }
+  static async putMapping(
+    teamId: string,
+    newMappings: EmojiMappings
+  ): Promise<UpdateWriteOpResult> {
+    if (!this.collection) await this.connect();
+
+    const mappings = await this.getMappings(teamId);
+
+    const dateKey: keyof EmojiMappingsDbo = mappings ? 'lastUpdated' : 'created';
+    const update = { mappings: { ...mappings, ...newMappings }, teamId, [dateKey]: new Date() };
+    const options: UpdateOneOptions = { upsert: true };
+    return await this.collection.updateOne({ teamId }, update, options);
+  }
   //
   // static deleteMapping(serverId: string): Promise<number> {
   //   if (!this.collection) this.connect();

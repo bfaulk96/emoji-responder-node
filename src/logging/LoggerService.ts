@@ -7,5 +7,5 @@ const customFormat = format.printf((info: LogEntry) => {
 
 export const logger = createLogger({
   format: format.combine(format.timestamp(), customFormat, format.colorize()),
-  transports: [new transports.Console({ level: 'info' })],
+  transports: [new transports.Console({ level: 'debug' })],
 });

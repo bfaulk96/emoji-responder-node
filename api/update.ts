@@ -1,13 +1,13 @@
 import { NowRequest, NowRequestBody, NowResponse } from '@vercel/node';
-import { SlackUser } from '../src/models/slack-user';
-import { logger } from '../src/logging/LoggerService';
-import { getEmojiResponseServerless } from '../src/api';
 import {
   checkAllowedMethodsOrError,
   connectOrError,
   getBotTokenOrError,
 } from '../src/helpers/helpers';
+import { SlackUser } from '../src/models/slack-user';
+import { logger } from '../src/logging/LoggerService';
 import { Methods } from '../src/models/types';
+import { getEmojiResponseServerless, updateEmojiMappingsServerless } from '../src/api';
 
 export default async (request: NowRequest, response: NowResponse) => {
   const connErr = await connectOrError(response);
@@ -19,15 +19,11 @@ export default async (request: NowRequest, response: NowResponse) => {
 
   logger.info(`${request?.method ?? 'UNKNOWN METHOD'} ${request?.url}`);
 
-  const methodErr = checkAllowedMethodsOrError(
-    request?.method as Methods,
-    [Methods.POST],
-    response
-  );
+  const methodErr = checkAllowedMethodsOrError(request?.method as Methods, [Methods.PUT], response);
   if (methodErr) return methodErr;
 
   const body: NowRequestBody = request?.body;
 
-  const { status, body: responseBody } = await getEmojiResponseServerless(user, body);
+  const { status, body: responseBody } = await updateEmojiMappingsServerless(user, body);
   return response.status(status).send(responseBody);
 };

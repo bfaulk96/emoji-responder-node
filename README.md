@@ -6,6 +6,8 @@ Built with NodeJS and Typescript
 ### Endpoints:
 - POST https://emoji-responder-node-git-main.bfaulk96.vercel.app/api/serverless
     - Receives messages from Slack channel and reacts with emojis if matches are found in team emoji mappings
+- PUT https://emoji-responder-node-git-main.bfaulk96.vercel.app/api/update
+    - Receives slash command from Slack channel and update team's emoji mappings accordingly
 
 ### Current Roadmap:
 - [x] Connect to database

@@ -3,6 +3,7 @@ import { logger } from './logging/LoggerService';
 import { addMultipleReactions } from './actions/actions';
 import { SlackUser } from './models/slack-user';
 import { FunctionResults } from './models/types';
+import { containsWord, respondToHandshake } from './helpers/helpers';
 
 export async function getEmojiResponseServerless(
   user: SlackUser,
@@ -13,10 +14,8 @@ export async function getEmojiResponseServerless(
 
     // Respond to slack handshake if necessary
     const handshake = respondToHandshake(body, response);
-    if (handshake) {
-      response.body = handshake.body;
-      return response;
-    }
+    if (handshake) return handshake;
+
     const teamId = body?.team_id;
     const slackEvent = body?.event;
     const text = slackEvent?.text;
@@ -57,7 +56,7 @@ export async function getEmojiResponseServerless(
 
     return response;
   } catch (e) {
-    logger.error('Error occurred: ', e);
+    logger.error('Error occurred: ${e}');
     return {
       status: 500,
       body: 'Internal Server Error',
@@ -65,38 +64,30 @@ export async function getEmojiResponseServerless(
   }
 }
 
-export function respondToHandshake(
-  body: any,
-  response: FunctionResults
-): FunctionResults | undefined {
-  const challenge = body?.value?.challenge ?? body?.challenge;
-  if (challenge) {
-    response.body = { challenge };
+export async function updateEmojiMappingsServerless(
+  user: SlackUser,
+  body: any
+): Promise<FunctionResults> {
+  try {
+    const response: FunctionResults = { status: 200, body: { success: true } };
+
+    // Respond to slack handshake if necessary
+    const handshake = respondToHandshake(body, response);
+    if (handshake) return handshake;
+
+    const teamId = body?.team_id;
+    const slackEvent = body?.event;
+    const text = slackEvent?.text;
+
+    // TODO: Stuff here
+    logger.debug(JSON.stringify(body, null, 2));
+
     return response;
+  } catch (e) {
+    logger.error('Error occurred: ${e}');
+    return {
+      status: 500,
+      body: 'Internal Server Error',
+    };
   }
-}
-
-// // TODO: check if body uses interface?
-// export function validateBody(
-//   request: any,
-//   response: any,
-//   interfaceType?: any,
-// ): FunctionResults | undefined {
-//   if (!request.hasBody) {
-//     response.status = 400;
-//     response.body = {
-//       success: false,
-//       msg: 'No data',
-//     };
-//     return response;
-//   }
-// }
-
-function containsWord(str: string, word: string): boolean {
-  return (
-    // check that word isn't part of an emoji already
-    str.match(new RegExp('.*:[A-z_,-]*' + word + '[A-z_,-]*:.*')) === null &&
-    // check that word is found in text
-    str.match(new RegExp('\\b' + word + '\\b')) !== null
-  );
 }
