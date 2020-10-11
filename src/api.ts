@@ -108,18 +108,23 @@ export async function updateEmojiMappingsServerless(
     }
 
     if (dbResult?.result?.ok) {
-      response.body = `Successfully ${(operation + 'ed').replace('ee', 'e')} emoji mapping${
+      const message = `Successfully ${(operation + 'ed').replace('ee', 'e')} emoji mapping${
         bulk ? 's' : ''
       }.`;
-    } else
+      logger.info(message);
+      response.body = message;
+    } else {
+      const message = `Error ${(operation + 'ing').replace('ei', 'i')} emoji mapping.`;
+      logger.error(message);
       response = {
         status: 500,
-        body: `Error ${(operation + 'ing').replace('ei', 'i')} emoji mapping`,
+        body: message,
       };
+    }
 
     return response;
   } catch (e) {
-    logger.error('Error occurred: ${e}');
+    logger.error(`Error occurred: ${e}`);
     return {
       status: 500,
       body: 'Internal Server Error',
