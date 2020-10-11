@@ -41,10 +41,12 @@ export class Database {
   ): Promise<UpdateWriteOpResult> {
     if (!this.collection) await this.connect();
 
-    const mappings = await this.getMappings(teamId);
+    const existingMappings = await this.getMappings(teamId);
+    const mappings = { ...existingMappings, ...newMappings };
+    Object.keys(mappings).forEach((key) => !mappings[key] && delete mappings[key]);
 
     const dateKey: keyof EmojiMappingsDbo = mappings ? 'lastUpdated' : 'created';
-    const update = { mappings: { ...mappings, ...newMappings }, teamId, [dateKey]: new Date() };
+    const update = { mappings, teamId, [dateKey]: new Date() };
     const options: UpdateOneOptions = { upsert: true };
     return await this.collection.updateOne({ teamId }, update, options);
   }

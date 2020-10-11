@@ -1,4 +1,4 @@
-export type EmojiMappings = Record<string, string>;
+export type EmojiMappings = Record<string, string | undefined>;
 
 export interface EmojiMappingsDbo {
   _id: string;
@@ -19,3 +19,10 @@ export enum Methods {
   PUT = 'PUT',
   DELETE = 'DELETE',
 }
+
+export const CommandTypes = {
+  ADD: ['add', 'a', 'new', 'create', 'n', 'c'],
+  REMOVE: ['delete', 'remove', 'r', 'd'],
+  BULK_ADD: ['bulk-add', 'ba'],
+  BULK_REMOVE: ['bulk-remove', 'br'],
+};

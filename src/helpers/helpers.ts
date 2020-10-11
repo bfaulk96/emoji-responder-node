@@ -65,3 +65,25 @@ export function containsWord(str: string, word: string): boolean {
     str.match(new RegExp('\\b' + word + '\\b')) !== null
   );
 }
+
+export function containsInvalidCharacters(str: string) {
+  return !/^[a-zA-Z0-9_"' -]/.test(str);
+}
+
+export function splitOnSpacesOrQuotes(str: string): string[] {
+  //The parenthesis in the regex creates a captured group within the quotes
+  const splitBySpacesOrQuotes = /[^\s"]+|"([^"]*)"|'([^']*)'/gi;
+  const results = [];
+
+  let match = splitBySpacesOrQuotes.exec(str);
+  while (match) {
+    // Each call to exec returns the next regex match as an array
+
+    // Index 1 in the array is the captured group if it exists
+    // Index 0 is the matched text, which we use if no captured group exists
+    results.push(match[1] ?? match[0]);
+    match = splitBySpacesOrQuotes.exec(str);
+  }
+
+  return results;
+}
