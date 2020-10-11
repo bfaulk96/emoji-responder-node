@@ -23,13 +23,13 @@ export default (request: NowRequest, response: NowResponse) => {
     return response.send(405).send('Method Not Allowed');
   } else {
     let body;
-    const reqBody = request?.body;
+    const encodedBody = request?.body;
 
     try {
-      logger.info('Received request body', { body: reqBody });
-      body = JSON.parse(atob(reqBody));
+      logger.info('Received request body', { body: encodedBody });
+      body = JSON.parse(Buffer.from(encodedBody, 'base64').toString());
     } catch (e) {
-      logger.error(`Error parsing malformed body: ${e}`, { body: reqBody });
+      logger.error(`Error parsing malformed body: ${e}`, { body: encodedBody });
       return response.status(400).send('Malformed body');
     }
 
