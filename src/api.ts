@@ -37,9 +37,7 @@ export async function getEmojiResponseServerless(
 
     if (text && channel && timestamp) {
       const emojis = Object.keys(emojiMap)
-        .filter((key) => {
-          return containsWord(text.toLowerCase(), key);
-        })
+        .filter((key) => containsWord(text.toLowerCase(), key))
         .sort((a, b) => {
           const indexA = text.indexOf(a);
           const indexB = text.indexOf(b);

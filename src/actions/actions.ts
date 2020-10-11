@@ -7,9 +7,9 @@ export async function addMultipleReactions(
   timestamp: string,
   emojis: string[]
 ) {
-  await Promise.all(
-    emojis.map(async (emoji) => await addReaction(user, channel, timestamp, emoji))
-  );
+  for (const emoji of emojis) {
+    await addReaction(user, channel, timestamp, emoji);
+  }
 }
 
 // send a message in Slack
