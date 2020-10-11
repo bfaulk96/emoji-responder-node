@@ -11,6 +11,3 @@ dist/
 coverage/
 .vercel/
 .now/
-
-# Ignore all HTML files:
-*.html
