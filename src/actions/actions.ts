@@ -1,4 +1,5 @@
 import { logger } from '../logging/LoggerService';
+import fetch from 'node-fetch';
 
 export async function addMultipleReactions(
   user: any,
