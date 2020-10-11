@@ -25,6 +25,7 @@ export enum Methods {
 export const CommandTypes = {
   ADD: ['add', 'a', 'new', 'create', 'n', 'c'],
   REMOVE: ['delete', 'remove', 'r', 'd'],
+  UPDATE: ['update', 'u', 'overwrite', 'change'],
   BULK_ADD: ['bulk-add', 'ba'],
   BULK_REMOVE: ['bulk-remove', 'br'],
 };

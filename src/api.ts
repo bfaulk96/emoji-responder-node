@@ -90,27 +90,41 @@ export async function updateEmojiMappingsServerless(
     if (containsInvalidCharacters(text)) return { status: 400, body: 'Invalid character(s) used.' };
     const [commandType, ...params] = splitOnSpacesOrQuotes(text);
 
-    let dbResult: UpdateWriteOpResult;
+    let dbResult: UpdateWriteOpResult | string;
     let operation: string;
     let mappings: string;
     const bulk = false;
 
-    if (CommandTypes.ADD.includes(commandType) && params?.length === 2) {
-      mappings = `"${params[0]}" => "${params[1]}"`;
-      operation = 'add';
-      logger.info(`Adding emoji mapping: ${mappings}`);
-      dbResult = await Database.upsertMappings(teamId, { [params[0]]: params[1] });
-    } else if (CommandTypes.REMOVE.includes(commandType) && params?.length === 1) {
-      mappings = `"${params[0]}"`;
-      operation = 'remove';
-      logger.info(`Removing emoji mapping for key: ${mappings}`);
-      dbResult = await Database.upsertMappings(teamId, { [params[0]]: undefined });
-    } else {
-      logger.warn(`Invalid slash command used. commandType: "${commandType}", params: ${params}`);
-      return { status: 400, body: 'Slash command invalid.' };
+    switch (true) {
+      case CommandTypes.ADD.includes(commandType) && params?.length === 2:
+        mappings = `"${params[0]}" => "${params[1]}"`;
+        operation = 'add';
+        logger.info(`Adding emoji mapping: ${mappings}`);
+        dbResult = await Database.upsertMappings(teamId, { [params[0]]: params[1] });
+        break;
+      case CommandTypes.UPDATE.includes(commandType) && params?.length === 2:
+        mappings = `"${params[0]}" => "${params[1]}"`;
+        operation = 'update';
+        logger.info(`Updating emoji mapping: ${mappings}`);
+        dbResult = await Database.upsertMappings(teamId, { [params[0]]: params[1] }, true);
+        break;
+      case CommandTypes.REMOVE.includes(commandType) && params?.length === 1:
+        mappings = `"${params[0]}"`;
+        operation = 'remove';
+        logger.info(`Removing emoji mapping for key: ${mappings}`);
+        dbResult = await Database.upsertMappings(teamId, { [params[0]]: undefined });
+        break;
+      default:
+        logger.warn(`Invalid slash command used. commandType: "${commandType}", params: ${params}`);
+        return { status: 400, body: 'Slash command invalid.' };
     }
 
-    if (dbResult?.result?.ok) {
+    if (typeof dbResult === 'string') {
+      response.body = {
+        response_type: 'in_channel',
+        text: `${dbResult} To overwrite existing mapping, please use \`/emoji-map update "${params[0]}" "${params[1]}"\``,
+      };
+    } else if (dbResult?.result?.ok) {
       const message = `Successfully ${(operation + 'ed').replace('ee', 'e')} emoji mapping${
         bulk ? 's' : ''
       }.`;
@@ -120,7 +134,7 @@ export async function updateEmojiMappingsServerless(
         text: message,
       };
     } else {
-      const message = `Error ${(operation + 'ing').replace('ei', 'i')} emoji mapping: ${mappings}`;
+      const message = `Error ${(operation + 'ing').replace('ei', 'i')} emoji mapping.`;
       logger.error(message);
       response = {
         status: 500,

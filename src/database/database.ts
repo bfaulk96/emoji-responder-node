@@ -19,7 +19,7 @@ export class Database {
   static async connect(): Promise<unknown | undefined> {
     try {
       if (this.client) this.client.close?.();
-      this.client = new MongoClient(mongoUrl);
+      this.client = new MongoClient(mongoUrl, { useNewUrlParser: true });
 
       await this.client.connect();
       const database = this.client.db(dbName);
@@ -30,18 +30,27 @@ export class Database {
     }
   }
 
-  static async getMappings(teamId: string): Promise<EmojiMappings> {
+  static async getMappings(teamId: string): Promise<EmojiMappings | undefined> {
     if (!this.collection) await this.connect();
     return (await this.collection?.findOne<EmojiMappingsDbo>({ teamId }))?.mappings;
   }
 
   static async upsertMappings(
     teamId: string,
-    newMappings: EmojiMappings
-  ): Promise<UpdateWriteOpResult> {
+    newMappings: EmojiMappings,
+    overwriteExisting = false
+  ): Promise<UpdateWriteOpResult | string> {
     if (!this.collection) await this.connect();
 
     const existingMappings = await this.getMappings(teamId);
+
+    if (
+      Object.keys(newMappings).some((key) => newMappings[key] && existingMappings?.[key]) &&
+      !overwriteExisting
+    ) {
+      return 'Oops! Mapping already exists.';
+    }
+
     const mappings = { ...existingMappings, ...newMappings };
     Object.keys(mappings).forEach((key) => !mappings[key] && delete mappings[key]);
 
