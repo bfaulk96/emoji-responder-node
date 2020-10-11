@@ -1,6 +1,10 @@
 # Emoji Responder
 
-Responds with emojis to keywords or phrases in a Slack server
-
+#### Responds with emojis to keywords or phrases in a Slack server
 Built with NodeJS and Typescript
-(as a fallback since the Deno version has hit so many snags)
+
+### Current Roadmap:
+- [x] Connect to database
+- [ ] Clean up typings and comments
+- [ ] Add endpoint to change log level dynamically (for easier debugging)?
+- [ ] Add functionality to add/remove mappings from database for a server
