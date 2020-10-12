@@ -11,6 +11,14 @@ Built with NodeJS and Typescript
 - [x] Connect to database
 - [x] Clean up typings and comments
 - [x] Add error check(s) to Slack calls
-- [x] Add functionality to add/remove mappings from database for a team
-- [ ] Add functionality to BULK add/remove mappings from database for a team
-- [ ] Add functionality to get a list of mappings for a particular team
+- [x] Add/remove mappings from database for a team
+- [ ] Bulk add/remove mappings from database for a team
+- [ ] Get a list of mappings for a particular team via slash command
+- [ ] Allow simple regex mappings?
+- [ ] Add demo gif to README
+
+#### Privacy:
+Note that in order for this to work, it reads every single message sent to a channel this bot is in.
+That being said, these messages are never stored, only used to find keywords for mappings.
+
+Team Ids are stored in order to find your team's mappings to add/remove/etc from DB
