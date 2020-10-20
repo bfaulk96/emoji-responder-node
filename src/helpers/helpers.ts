@@ -12,7 +12,7 @@ export async function validateFromSlack(
     const signingSecret = process.env.SIGNING_SECRET ?? '';
     const bodyStr = await streamToString(req);
     logger.debug(`Headers: ${JSON.stringify(req.headers, null, 2)}`);
-    const ts = req.headers['x-slack-request-timestamp'] ?? '';
+    const ts = parseInt((req.headers['x-slack-request-timestamp'] as string) ?? '0');
     const slackSignature: string = req.headers['x-slack-signature'] as string;
 
     if (!ts || !slackSignature) {
@@ -44,10 +44,10 @@ export async function validateFromSlack(
   }
 }
 
-async function streamToString(stream) {
-  const chunks = [];
+async function streamToString(stream: NowRequest) {
+  const chunks: Uint8Array[] = [];
   return new Promise((resolve, reject) => {
-    stream.on('data', (chunk) => chunks.push(chunk));
+    stream.on('data', (chunk: Uint8Array) => chunks.push(chunk));
     stream.on('error', reject);
     stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
   });
